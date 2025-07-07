@@ -80,7 +80,7 @@
         .message {
             font-size: 14px;
             margin-top: 15px;
-            display: none;
+            dis: none;
         }
 
         .success {
@@ -92,7 +92,7 @@
         }
 
         #access-link {
-            display: none;
+            dis: none;
             margin-top: 15px;
         }
 
@@ -107,7 +107,7 @@
             transition: 0.3s;
             text-transform: uppercase;
             text-decoration: none;
-            display: inline-block;
+            dis: inline-block;
             box-shadow: 0px 0px 10px #00ffea;
         }
 
@@ -146,6 +146,7 @@
     function playSound(soundId) {
         let sound = document.getElementById(soundId);
         if (sound) {
+            sound.volume = 0.5;
             sound.play().catch(error => console.warn("Audio file missing or can't be played:", error));
         }
     }
