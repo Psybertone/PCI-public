@@ -195,13 +195,10 @@
         return;
     }
            
-    let url = `https://script.google.com/macros/s/AKfycby1lnrgf1dEK0oQW8MWN6-SdLak-_D3PAhTuzWOX3NJxVLE7dpYCQvAbx3nAjH9oLJN/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}&auth=pxZ91q-7vE4`;
-    console.log("Calling URL:", url);
-           
     let script = document.createElement("script");
-    script.src = `https://script.google.com/macros/s/AKfycby1lnrgf1dEK0oQW8MWN6-SdLak-_D3PAhTuzWOX3NJxVLE7dpYCQvAbx3nAjH9oLJN/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}&auth=pxZ91q-7vE4`;
+    let authCode = "pxZ91q-7vE4";
+    script.src = `https://script.google.com/macros/s/AKfycby1lnrgf1dEK0oQW8MWN6-SdLak-_D3PAhTuzWOX3NJxVLE7dpYCQvAbx3nAjH9oLJN/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}&auth=${encodeURIComponent(authCode)}`;
     document.body.appendChild(script);
-    }
 
 
         function showError(msg) {
