@@ -209,9 +209,10 @@ function checkLength() {
     const input = document.getElementById("user-id");
 
     // Store last valid input
-    if (!input.dataset.previous || input.value !== "12 characters max") {
+    if (input.value.length <= 12 && input.value !== "12 characters max") {
         input.dataset.previous = input.value;
     }
+
 
     if (input.value.length > 12 && input.value !== "12 characters max") {
         // They've typed too much
