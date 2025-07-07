@@ -168,6 +168,11 @@ function registerUser() {
         return;
     }
 
+    window.jsonpTimeout = setTimeout(() => {
+        loadingMsg.style.display = "none";
+        showError("Server took too long to respond. Please try again.");
+    }, 5000); // 5 seconds
+    
     let script = document.createElement("script");
     script.src = `https://script.google.com/macros/s/AKfycbxcxz5n19RG1VImPoOCkWX5PXkzyGnCANTsMwS8t-BFNx4hKn8my5qROLmoNJHh5Jsr0A/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}`;
     document.body.appendChild(script);
