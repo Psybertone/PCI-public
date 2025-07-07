@@ -202,36 +202,45 @@
             }
         }
     </script>
-    
-     <script>
-        function checkLength() {
-            const input = document.getElementById("user-id");
 
-            if (!input.dataset.previous) {
-                input.dataset.previous = "";
-            }
+    // max characters handling + message
+    <script>
+function checkLength() {
+    const input = document.getElementById("user-id");
 
-            if (input.value === "12 characters max") {
-                // If they're pressing backspace to clear the warning
-                if (input.value.length < 17) {
-                    input.value = input.dataset.previous;
-                    input.style.color = "#00ffea";
-                }
-                return;
-            }
+    // Store last valid input
+    if (!input.dataset.previous || input.value !== "12 characters max") {
+        input.dataset.previous = input.value;
+    }
 
-            if (input.value.length > 12) {
-                // Save their last valid entry
-                input.dataset.previous = input.value.substring(0, 12);
-                // Show warning
-                input.value = "12 characters max";
-                input.style.color = "red";
-            } else {
-                input.dataset.previous = input.value;
-                input.style.color = "#00ffea";
-            }
-        }
-        </script>
+    if (input.value.length > 12 && input.value !== "12 characters max") {
+        // They've typed too much
+        input.value = "12 characters max";
+        input.style.color = "#ff9900";
+    } else if (input.value === "12 characters max") {
+        // If they try typing while locked, block it
+        input.value = "12 characters max";
+        input.style.color = "#ff9900";
+    } else {
+        // Normal case
+        input.style.color = "#00ffea";
+    }
+}
+
+document.getElementById("user-id").addEventListener("keydown", function(e) {
+    const input = this;
+    if (input.value === "12 characters max" && e.key === "Backspace") {
+        // On backspace, restore previous value
+        input.value = input.dataset.previous || "";
+        input.style.color = "#00ffea";
+        e.preventDefault();
+    } else if (input.value === "12 characters max") {
+        // Prevent typing anything else
+        e.preventDefault();
+    }
+});
+</script>
+
 
 
 
