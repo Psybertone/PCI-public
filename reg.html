@@ -111,7 +111,7 @@
         <h1>PsyberCorp Registration</h1>
         <input type="text" id="name" placeholder="Your Name" />
         <input type="email" id="email" placeholder="Your Email (real if you want responses)" />
-        <input type="text" id="user-id" placeholder="Preferred User ID (8-12 chars)" />
+        <input type="text" id="user-id" placeholder="Preferred User ID (8-12 chars)" maxlength="12" oninput="checkLength()" />
 
         <div class="terms">
             <input type="checkbox" id="agree" /> I agree to the <a href="https://www.psybercorp.industries/policy-disclaimer" target="_blank" style="color:#00ffea">Terms & Conditions</a>
@@ -202,5 +202,18 @@
             }
         }
     </script>
+    <script>
+       function checkLength() {
+        const input = document.getElementById("user-id");
+        const errorMsg = document.getElementById("error-message");
+        if (input.value.length > 12) {
+            errorMsg.innerText = "⚠️ Max 12 characters allowed for User ID.";
+            errorMsg.style.display = "block";
+        } else {
+            errorMsg.style.display = "none";
+        }
+      }
+    </script>
+
 </body>
 </html>
