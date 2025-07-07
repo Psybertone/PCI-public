@@ -111,7 +111,7 @@
         <h1>PsyberCorp Registration</h1>
         <input type="text" id="name" placeholder="Your Name" />
         <input type="email" id="email" placeholder="Your Email (real if you want responses)" />
-        <input type="text" id="user-id" placeholder="Preferred User ID (8-12 chars)" maxlength="12" oninput="checkLength()" />
+        <input type="text" id="user-id" placeholder="Preferred User ID (8-12 chars)" oninput="checkLength()" />
 
         <div class="terms">
             <input type="checkbox" id="agree" /> I agree to the <a href="https://www.psybercorp.industries/policy-disclaimer" target="_blank" style="color:#00ffea">Terms & Conditions</a>
@@ -203,22 +203,37 @@
         }
     </script>
     
-    <script>
-       function checkLength() {
-        const input = document.getElementById("user-id");
-        const errorMsg = document.getElementById("error-message");
+     <script>
+        function checkLength() {
+            const input = document.getElementById("user-id");
 
-        if (input.value.length >= 12) {
-            input.value = input.value.substring(0, 12); // hard trim
-            input.disabled = true; // lock the field
-            errorMsg.innerText = "⚠️ 12 characters max";
-            errorMsg.style.display = "block";
-        } else {
-            input.disabled = false;
-            errorMsg.style.display = "none";
+            if (!input.dataset.previous) {
+                input.dataset.previous = "";
+            }
+
+            if (input.value === "12 characters max") {
+                // If they're pressing backspace to clear the warning
+                if (input.value.length < 17) {
+                    input.value = input.dataset.previous;
+                    input.style.color = "#00ffea";
+                }
+                return;
+            }
+
+            if (input.value.length > 12) {
+                // Save their last valid entry
+                input.dataset.previous = input.value.substring(0, 12);
+                // Show warning
+                input.value = "12 characters max";
+                input.style.color = "red";
+            } else {
+                input.dataset.previous = input.value;
+                input.style.color = "#00ffea";
+            }
         }
-    }
-    </script>
+        </script>
+
+
 
 
 </body>
