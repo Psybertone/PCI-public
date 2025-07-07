@@ -200,7 +200,7 @@
     script.src = `https://script.google.com/macros/s/AKfycby1lnrgf1dEK0oQW8MWN6-SdLak-_D3PAhTuzWOX3NJxVLE7dpYCQvAbx3nAjH9oLJN/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}&auth=${encodeURIComponent(authCode)}`;
     document.body.appendChild(script);
 
-
+    }
         function showError(msg) {
             let errorMsg = document.getElementById("error-message");
             errorMsg.innerText = msg;
