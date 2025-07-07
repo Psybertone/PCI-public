@@ -103,6 +103,13 @@
             color: orange;
             font-size: 14px;
             margin-top: 15px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px orange; }
+            50% { text-shadow: 0 0 15px orange; }
+            100% { text-shadow: 0 0 5px orange; }
         }
 
         #captcha-container {
