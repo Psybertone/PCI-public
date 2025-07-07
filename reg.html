@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>PsyberCorp Registration</title>
     <style>
-        
         @import url('https://fonts.googleapis.com/css2?family=Orbitron&family=Electrolize&display=swap');
-        
+
         *, *:before, *:after { box-sizing: border-box; }
-        
+
         body {
             background-color: #0d0d0d;
             font-family: 'Orbitron', sans-serif;
@@ -86,13 +85,8 @@
             display: none;
         }
 
-        .success {
-            color: lime;
-        }
-
-        .error {
-            color: red;
-        }
+        .success { color: lime; }
+        .error { color: red; }
 
         .terms {
             margin: 10px 0;
@@ -129,10 +123,10 @@
         <input type="email" id="email" placeholder="Your Email (real if you want responses)" />
         <input type="text" id="user-id" placeholder="Preferred User ID (8-12 chars)" oninput="checkLength()" />
         <p class="message loading" id="loading-message" style="display: none;">Processing...</p>
-        
-        <div class="terms">
-            <input type="checkbox" id="agree" /> I agree to the <a href="https://www.psybercorp.industries/policy-disclaimer" target="_blank" style="color:#00ffea">Terms & Conditions</a>
 
+        <div class="terms">
+            <input type="checkbox" id="agree" /> I agree to the 
+            <a href="https://www.psybercorp.industries/policy-disclaimer" target="_blank" style="color:#00ffea">Terms & Conditions</a>
         </div>
 
         <div id="captcha-container" class="g-recaptcha" data-sitekey="6LcERHorAAAAAO250Y1XJkGRb3_cm98RDvitYYfm"></div>
@@ -144,76 +138,30 @@
     </div>
 
     <script>
-        function playSound(soundId) {
-            let sound = document.getElementById(soundId);
-            if (sound) sound.play().catch(() => {});
-        }
-
-        function blinkSubmitButton() {
-            const btn = document.getElementById("submit-btn");
-            btn.classList.add("blink");
-            setTimeout(() => btn.classList.remove("blink"), 150);
-        }
-
-       function registerUser() {
-    playSound("click-sound");
-    blinkSubmitButton();
-
-    let name = document.getElementById("name").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let userId = document.getElementById("user-id").value.trim();
-    let agree = document.getElementById("agree").checked;
-    let errorMsg = document.getElementById("error-message");
-    let successMsg = document.getElementById("success-message");
-    let loadingMsg = document.getElementById("loading-message");
-
-    errorMsg.style.display = "none";
-    successMsg.style.display = "none";
-    loadingMsg.style.display = "block";  // <-- show spinner/loading text
-
-    if (!name || !email || !userId) {
-        showError("All fields are required.");
-        loadingMsg.style.display = "none";
-        return;
+    function playSound(soundId) {
+        let sound = document.getElementById(soundId);
+        if (sound) sound.play().catch(() => {});
     }
 
-    if (!/^[a-zA-Z0-9]{8,12}$/.test(userId)) {
-        showError("User ID must be 8-12 letters/numbers only.");
-        loadingMsg.style.display = "none";
-        return;
+    function blinkSubmitButton() {
+        const btn = document.getElementById("submit-btn");
+        btn.classList.add("blink");
+        setTimeout(() => btn.classList.remove("blink"), 150);
     }
 
-    if (!agree) {
-        showError("You must agree to the Terms & Conditions.");
-        loadingMsg.style.display = "none";
-        return;
+    function showError(msg) {
+        let errorMsg = document.getElementById("error-message");
+        errorMsg.innerText = msg;
+        errorMsg.style.display = "block";
+        playSound("error-sound");
     }
 
-    if (grecaptcha.getResponse() === "") {
-        showError("Please complete the reCAPTCHA.");
-        loadingMsg.style.display = "none";
-        return;
-    }
-           
-    let script = document.createElement("script");
-    let authCode = "pxZ91q-7vE4";
-    script.src = `https://script.google.com/macros/s/AKfycby1lnrgf1dEK0oQW8MWN6-SdLak-_D3PAhTuzWOX3NJxVLE7dpYCQvAbx3nAjH9oLJN/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}&auth=${encodeURIComponent(authCode)}`;
-    document.body.appendChild(script);
-
-    }
-        function showError(msg) {
-            let errorMsg = document.getElementById("error-message");
-            errorMsg.innerText = msg;
-            errorMsg.style.display = "block";
-            playSound("error-sound");
-        }
-
-       function processResponse(result) {
+    function processResponse(result) {
         let errorMsg = document.getElementById("error-message");
         let successMsg = document.getElementById("success-message");
         let loadingMsg = document.getElementById("loading-message");
 
-        loadingMsg.style.display = "none";  // <-- hide spinner/loading text again
+        loadingMsg.style.display = "none";
         errorMsg.style.display = "none";
         successMsg.style.display = "none";
 
@@ -222,56 +170,85 @@
             successMsg.style.display = "block";
             playSound("success-sound");
             grecaptcha.reset();
-            } else {
+        } else {
             showError(result.message);
             grecaptcha.reset();
-          }
+        }
     }
+
+    function registerUser() {
+        playSound("click-sound");
+        blinkSubmitButton();
+
+        let name = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let userId = document.getElementById("user-id").value.trim();
+        let agree = document.getElementById("agree").checked;
+        let errorMsg = document.getElementById("error-message");
+        let successMsg = document.getElementById("success-message");
+        let loadingMsg = document.getElementById("loading-message");
+
+        errorMsg.style.display = "none";
+        successMsg.style.display = "none";
+        loadingMsg.style.display = "block";
+
+        if (!name || !email || !userId) {
+            showError("All fields are required.");
+            loadingMsg.style.display = "none";
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9]{8,12}$/.test(userId)) {
+            showError("User ID must be 8-12 letters/numbers only.");
+            loadingMsg.style.display = "none";
+            return;
+        }
+
+        if (!agree) {
+            showError("You must agree to the Terms & Conditions.");
+            loadingMsg.style.display = "none";
+            return;
+        }
+
+        if (grecaptcha.getResponse() === "") {
+            showError("Please complete the reCAPTCHA.");
+            loadingMsg.style.display = "none";
+            return;
+        }
+
+        let script = document.createElement("script");
+        let authCode = "pxZ91q-7vE4";
+        script.src = `https://script.google.com/macros/s/AKfycby1lnrgf1dEK0oQW8MWN6-SdLak-_D3PAhTuzWOX3NJxVLE7dpYCQvAbx3nAjH9oLJN/exec?callback=processResponse&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${encodeURIComponent(userId)}&auth=${encodeURIComponent(authCode)}`;
+        document.body.appendChild(script);
+    }
+
+    // max characters + message
+    function checkLength() {
+        const input = document.getElementById("user-id");
+        if (input.value.length <= 12 && input.value !== "12 characters max") {
+            input.dataset.previous = input.value;
+        }
+
+        if (input.value.length > 12 && input.value !== "12 characters max") {
+            input.value = "12 characters max";
+            input.style.color = "#ff9900";
+        } else if (input.value === "12 characters max") {
+            input.style.color = "#ff9900";
+        } else {
+            input.style.color = "#00ffea";
+        }
+    }
+
+    document.getElementById("user-id").addEventListener("keydown", function(e) {
+        const input = this;
+        if (input.value === "12 characters max" && e.key === "Backspace") {
+            input.value = input.dataset.previous || "";
+            input.style.color = "#00ffea";
+            e.preventDefault();
+        } else if (input.value === "12 characters max") {
+            e.preventDefault();
+        }
+    });
     </script>
-
-    // max characters handling + message
-    
-    <script>
-function checkLength() {
-    const input = document.getElementById("user-id");
-
-    // Store last valid input
-    if (input.value.length <= 12 && input.value !== "12 characters max") {
-        input.dataset.previous = input.value;
-    }
-
-
-    if (input.value.length > 12 && input.value !== "12 characters max") {
-        // They've typed too much
-        input.value = "12 characters max";
-        input.style.color = "#ff9900";
-    } else if (input.value === "12 characters max") {
-        // If they try typing while locked, block it
-        input.value = "12 characters max";
-        input.style.color = "#ff9900";
-    } else {
-        // Normal case
-        input.style.color = "#00ffea";
-    }
-}
-
-document.getElementById("user-id").addEventListener("keydown", function(e) {
-    const input = this;
-    if (input.value === "12 characters max" && e.key === "Backspace") {
-        // On backspace, restore previous value
-        input.value = input.dataset.previous || "";
-        input.style.color = "#00ffea";
-        e.preventDefault();
-    } else if (input.value === "12 characters max") {
-        // Prevent typing anything else
-        e.preventDefault();
-    }
-});
-</script>
-
-
-
-
-
 </body>
 </html>
