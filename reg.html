@@ -202,18 +202,24 @@
             }
         }
     </script>
+    
     <script>
        function checkLength() {
         const input = document.getElementById("user-id");
         const errorMsg = document.getElementById("error-message");
-        if (input.value.length > 12) {
-            errorMsg.innerText = "⚠️ Max 12 characters allowed for User ID.";
+
+        if (input.value.length >= 12) {
+            input.value = input.value.substring(0, 12); // hard trim
+            input.disabled = true; // lock the field
+            errorMsg.innerText = "⚠️ 12 characters max";
             errorMsg.style.display = "block";
         } else {
+            input.disabled = false;
             errorMsg.style.display = "none";
         }
-      }
+    }
     </script>
+
 
 </body>
 </html>
