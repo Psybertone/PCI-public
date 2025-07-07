@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsyberCorp Access Portal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&family=Electrolize&display=swap');
+
+        body {
+            background-color: #0d0d0d;
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffea;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 2px solid #00ffea;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 255, 234, 0.7);
+            background: rgba(20, 20, 20, 0.9);
+        }
+
+        h1 {
+            color: #00ffea;
+            text-shadow: 0px 0px 8px #00ffea;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #000;
+            border: 1px solid #00ffea;
+            color: #00ffea;
+            font-size: 16px;
+            text-align: center;
+            font-family: 'Electrolize', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0px 0px 10px #00ffea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(90deg, #00ffea, #0066ff);
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            text-transform: uppercase;
+            box-shadow: 0px 0px 10px #00ffea;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0px 0px 20px #00ffea;
+            transform: scale(1.05);
+        }
+
+        .submit-btn.blink {
+            animation: blinkEffect 150ms ease-in-out 0s 1;
+        }
+
+        @keyframes blinkEffect {
+            0% { box-shadow: 0px 0px 10px #00ffea; }
+            50% { box-shadow: 0px 0px 25px #00ffea; }
+            100% { box-shadow: 0px 0px 10px #00ffea; }
+        }
+
+        .message {
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success {
+            color: lime;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #access-link {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .access-btn {
+            background: linear-gradient(90deg, #00ffea, #0066ff);
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0px 0px 10px #00ffea;
+        }
+
+        .access-btn:hover {
+            box-shadow: 0px 0px 20px #00ffea;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+     <audio id="click-sound" src="sounds/RAmk2_tick_ST.mp3"></audio>
+     <audio id="success-sound" src="sounds/RAFUT_Sage2_SN_ST.mp3"></audio>
+     <audio id="error-sound" src="sounds/RAFUT_sage_SN_ST.mp3"></audio>
+
+
+    <div class="container">
+        <h1>PsyberCorp Access Portal</h1>
+        <p>Enter your PsyberCorp ID and Access Code</p>
+        
+        <input type="text" id="psybercorp-id" placeholder="PsyberCorp ID">
+        <input type="text" id="access-code" placeholder="Access Code">
+
+        <p class="message error" id="error-message"></p>
+        <p class="message success" id="success-message"></p>
+
+        <button class="submit-btn" id="submit-btn" onclick="validateAccess()">Verify Access</button>
+
+        <div id="access-link">
+            <a id="clue-url" class="access-btn" target="_blank">Proceed...</a>
+        </div>
+    </div>
+
+    <script>
+    let enterPressed = false;
+
+    function playSound(soundId) {
+        let sound = document.getElementById(soundId);
+        if (sound) {
+            sound.play().catch(error => console.warn("Audio file missing or can't be played:", error));
+        }
+    }
+
+    function blinkSubmitButton() {
+        const btn = document.getElementById("submit-btn");
+        btn.classList.add("blink");
+        setTimeout(() => btn.classList.remove("blink"), 150);
+    }
+
+    function validateAccess() {
+        playSound("click-sound");
+        let userID = document.getElementById("psybercorp-id").value.trim();
+        let accessCode = document.getElementById("access-code").value.trim();
+        let errorMsg = document.getElementById("error-message");
+        let successMsg = document.getElementById("success-message");
+        let accessLink = document.getElementById("access-link");
+        let clueURL = document.getElementById("clue-url");
+        let submitBtn = document.getElementById("submit-btn");
+
+        errorMsg.style.display = "none";
+        successMsg.style.display = "none";
+        accessLink.style.display = "none";
+
+        if (!userID || !accessCode) {
+            errorMsg.innerText = "Please enter both User ID and Access Code.";
+            errorMsg.style.display = "block";
+            playSound("error-sound");
+            return;
+        }
+
+        let script = document.createElement("script");
+        script.src = `https://script.google.com/macros/s/AKfycbxH4svlGrFswKyXnYsxQ1H6OvHYfQ0aW_urzbabIka6adRNS4CgA8fSZGzsQ1GR-J0l4A/exec?callback=processResponse&id=${encodeURIComponent(userID)}&code=${encodeURIComponent(accessCode)}`;
+        document.body.appendChild(script);
+    }
+
+    function processResponse(result) {
+        let errorMsg = document.getElementById("error-message");
+        let successMsg = document.getElementById("success-message");
+        let accessLink = document.getElementById("access-link");
+        let clueURL = document.getElementById("clue-url");
+        let submitBtn = document.getElementById("submit-btn");
+
+        if (result.status === "success") {
+            successMsg.innerText = "✅ Access Granted!";
+            successMsg.style.display = "block";
+            clueURL.href = result.clueURL;
+            accessLink.style.display = "block";
+            submitBtn.style.display = "none";  // Hide the verify access button
+            playSound("success-sound");
+        } else {
+            errorMsg.innerText = result.message;
+            errorMsg.style.display = "block";
+            playSound("error-sound");
+        }
+    }
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !enterPressed) {
+            const activeElement = document.activeElement;
+            if (
+                activeElement.id === "psybercorp-id" ||
+                activeElement.id === "access-code"
+            ) {
+                enterPressed = true;
+                blinkSubmitButton();
+                validateAccess();
+            }
+        }
+    });
+
+    document.addEventListener("keyup", function (e) {
+        if (e.key === "Enter") {
+            enterPressed = false;
+        }
+    });
+</script>
+
+</body>
+</html>
