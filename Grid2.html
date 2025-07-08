@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PsyberCorp Hacker Puzzle</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+    body {
+        background: #0d0d0d;
+        font-family: 'Orbitron', sans-serif;
+        color: #00ffea;
+        text-align: center;
+        padding: 20px;
+    }
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 2px solid #00ffea;
+        border-radius: 10px;
+        background: rgba(20,20,20,0.9);
+    }
+    .grid {
+        display: grid;
+        gap: 10px;
+        margin: 20px auto;
+        width: fit-content;
+    }
+    .cell {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #222;
+        color: #00ffea;
+        border: 2px solid #00ffea;
+        font-size: 18px;
+        cursor: pointer;
+    }
+    .cell:hover {
+        background: #00ffea;
+        color: #000;
+    }
+    .selected {
+        background: #00ffea !important;
+        color: #000 !important;
+    }
+    .sequence-text {
+        font-size: 18px;
+        color: yellow;
+        animation: flash 1s infinite;
+        visibility: hidden;
+    }
+    @keyframes flash {
+        0%,100% { opacity: 1; }
+        50% { opacity: 0.2; }
+    }
+    .message {
+        display: none;
+        font-size: 18px;
+        margin-top: 15px;
+    }
+    .success {
+        color: lime;
+    }
+    .fail {
+        color: red;
+    }
+    #timer {
+        font-size: 20px;
+        font-weight: bold;
+        color: red;
+    }
+    button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background: #00ffea;
+        border: none;
+        color: black;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    button:hover {
+        background: #ff0077;
+        color: white;
+    }
+</style>
+</head>
+<body>
+<audio id="click-sound" src="sounds/click.mp3"></audio>
+<audio id="success-sound" src="sounds/success.mp3"></audio>
+<audio id="error-sound" src="sounds/error.mp3"></audio>
+<div class="container">
+    <h1>Hack the Access Grid</h1>
+    <p id="sequence-container" style="display:none"><strong>Enter the sequence:</strong> <span id="sequence-display" class="sequence-text"></span></p>
+    <p id="timer-container" style="display:none"><strong>Time Left: <span id="timer"></span> seconds</strong></p>
+    <div class="grid" id="grid"></div>
+    <p class="message success" id="success-message">✅ Access Granted!</p>
+    <p class="message fail" id="fail-message">❌ Failed! System lockdown in progress.</p>
+    <button id="start-btn" onclick="startStage()">Start</button>
+    <button id="next-btn" style="display:none" onclick="nextStage()">Next</button>
+    <button id="final-submit" style="display:none" onclick="submitFinal()">Submit Score</button>
+</div>
+<script>
+let stages = [
+    { rows: 3, cols: 3, time: 20, hideAt: 10, timeLeft: 0 },
+    { rows: 4, cols: 4, time: 16, hideAt: 8, timeLeft: 0 },
+    { rows: 6, cols: 4, time: 14, hideAt: 7, timeLeft: 0 }
+];
+let stageIndex = 0, correctSequence = [], userSequence = [], timer, timeRemaining = 20;
+function playSound(id) {
+    let s = document.getElementById(id);
+    if (s) { s.volume = 0.5; s.play().catch(() => {}); }
+}
+function startStage() {
+    let s = stages[stageIndex];
+    timeRemaining = s.time;
+    userSequence = [];
+    correctSequence = generateSequence(s.rows * s.cols);
+    document.getElementById("sequence-display").innerText = correctSequence.join(" → ");
+    document.getElementById("sequence-display").style.visibility = "visible";
+    generateGrid(s.rows, s.cols);
+    document.getElementById("start-btn").style.display = "none";
+    document.getElementById("success-message").style.display = "none";
+    document.getElementById("fail-message").style.display = "none";
+    document.getElementById("sequence-container").style.display = "block";
+    document.getElementById("timer-container").style.display = "block";
+    document.getElementById("timer").innerText = timeRemaining;
+    timer = setInterval(() => {
+        timeRemaining--;
+        document.getElementById("timer").innerText = timeRemaining;
+        if (timeRemaining === s.hideAt) document.getElementById("sequence-display").style.visibility = "hidden";
+        if (timeRemaining <= 0) { clearInterval(timer); failStage(); }
+    }, 1000);
+}
+function generateSequence(max) {
+    let hex = "0123456789ABCDEF", set = new Set();
+    while (set.size < 4) {
+        let c = hex[Math.floor(Math.random() * 16)] + hex[Math.floor(Math.random() * 16)];
+        set.add(c);
+    }
+    return Array.from(set);
+}
+function generateGrid(r, c) {
+    let g = document.getElementById("grid");
+    g.innerHTML = "";
+    g.style.gridTemplateColumns = `repeat(${c},1fr)`;
+    let codes = [...correctSequence];
+    while (codes.length < r * c) {
+        let h = "0123456789ABCDEF", code = h[Math.floor(Math.random() * 16)] + h[Math.floor(Math.random() * 16)];
+        if (!codes.includes(code)) codes.push(code);
+    }
+    shuffle(codes).forEach(v => {
+        let cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.innerText = v;
+        cell.onclick = () => selectCell(cell, v);
+        g.appendChild(cell);
+    });
+}
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+function selectCell(cell, val) {
+    if (timeRemaining <= 0 || userSequence.length >= correctSequence.length) return;
+    let idx = correctSequence.indexOf(val);
+    if (idx === userSequence.length) {
+        userSequence.push(val);
+        cell.classList.add("selected");
+        playSound("click-sound");
+        if (userSequence.length === correctSequence.length) {
+            clearInterval(timer);
+            stages[stageIndex].timeLeft = timeRemaining;
+            document.getElementById("success-message").style.display = "block";
+            document.getElementById("next-btn").style.display = stageIndex < 2 ? "inline-block" : "none";
+            document.getElementById("final-submit").style.display = stageIndex == 2 ? "inline-block" : "none";
+            playSound("success-sound");
+        }
+    } else {
+        playSound("error-sound");
+        failStage();
+    }
+}
+function failStage() {
+    document.getElementById("fail-message").style.display = "block";
+    clearInterval(timer);
+    stages[stageIndex].timeLeft = 0;
+    document.getElementById("next-btn").style.display = stageIndex < 2 ? "inline-block" : "none";
+    document.getElementById("final-submit").style.display = stageIndex == 2 ? "inline-block" : "none";
+}
+function nextStage() {
+    stageIndex++;
+    document.getElementById("sequence-display").style.visibility = "visible";
+    document.getElementById("next-btn").style.display = "none";
+    startStage();
+}
+function submitFinal() {
+    let total = stages.reduce((a, b) => a + b.timeLeft, 0);
+    let user = prompt("Enter your User ID to record your score:");
+    if (!user) return alert("You must enter your ID.");
+    alert(`Score ${total} recorded for ${user}. (Connect to Google Sheets here)`);
+}
+</script>
+</body>
+</html>
